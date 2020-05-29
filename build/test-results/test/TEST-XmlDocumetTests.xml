@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="XmlDocumetTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-05-29T04:45:15" hostname="Edwin.local" time="0.031">
+  <properties/>
+  <testcase name="testXmlDocumentCreation" classname="XmlDocumetTests" time="0.031"/>
+  <system-out><![CDATA[<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<books>
+    <book>Where the wind blows</book>
+    <book IsPublished='True'>Where the &#34;wind&#34; blows</book>
+</books>
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
