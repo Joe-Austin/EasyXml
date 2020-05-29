@@ -1,6 +1,0 @@
-8<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<books>
-&    <book>Where the wind blows</book>
-C    <book IsPublished='True'>Where the &#34;wind&#34; blows</book>
-	</books>
-
