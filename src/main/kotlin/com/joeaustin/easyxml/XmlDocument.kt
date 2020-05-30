@@ -2,6 +2,11 @@ package com.joeaustin.easyxml
 
 import javax.xml.parsers.SAXParserFactory
 
+/**
+ * XmlDocument
+ *
+ * @param subComponents will be comments and a single root element (everything after the first root will be ignored)
+ */
 class XmlDocument(val subComponents: List<XmlComponent>) {
     val root: XmlElement? by lazy { subComponents.firstOrNull { child -> child is XmlElement } as? XmlElement }
 
@@ -24,7 +29,12 @@ class XmlDocument(val subComponents: List<XmlComponent>) {
             }
         }
 
-        subComponents.forEach { c -> c.build(sb, "", buildOptions) }
+        for (component in subComponents) {
+            component.build(sb, "", buildOptions)
+            if (component is XmlElement) {
+                break
+            }
+        }
 
         return sb.toString()
     }
@@ -51,6 +61,10 @@ class XmlDocument(val subComponents: List<XmlComponent>) {
     }
 
     companion object {
+        /**
+         * Tries to parse an XmlDocument from text.
+         * @return An [XmlDocument] if the parse is successful, otherwise null.
+         */
         fun parse(text: String): XmlDocument? {
             text.byteInputStream().use { inputStream ->
                 val parserFactory = SAXParserFactory.newInstance()
