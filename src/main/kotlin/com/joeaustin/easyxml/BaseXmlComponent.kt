@@ -14,4 +14,8 @@ abstract class BaseXmlComponent : XmlComponent {
         return escapedText
     }
 
+    protected fun normalizeKey(text: String): String {
+        return text.replace(" ", "").trim()
+    }
+
 }

@@ -2,8 +2,8 @@ package com.joeaustin.easyxml
 
 import javax.xml.parsers.SAXParserFactory
 
-class XmlDocument(children: List<XmlComponent>) {
-    val root: XmlElement? by lazy { children.firstOrNull { child -> child is XmlElement } as? XmlElement }
+class XmlDocument(val subComponents: List<XmlComponent>) {
+    val root: XmlElement? by lazy { subComponents.firstOrNull { child -> child is XmlElement } as? XmlElement }
 
     override fun toString(): String {
         return toString(XmlBuildOptions())
@@ -24,7 +24,7 @@ class XmlDocument(children: List<XmlComponent>) {
             }
         }
 
-        root?.build(sb, "", buildOptions)
+        subComponents.forEach { c -> c.build(sb, "", buildOptions) }
 
         return sb.toString()
     }

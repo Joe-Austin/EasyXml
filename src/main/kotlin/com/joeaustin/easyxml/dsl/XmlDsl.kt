@@ -4,10 +4,14 @@ import com.joeaustin.easyxml.XmlAttribute
 import com.joeaustin.easyxml.XmlDocument
 import com.joeaustin.easyxml.XmlElement
 
+@DslMarker
+private annotation class XmlDsl
+
 fun xmlDocument(init: DocumentDsl.() -> Unit): XmlDocument {
     return DocumentDsl().also(init).build()
 }
 
+@XmlDsl
 class DocumentDsl {
     private val builder = XmlDocument.Builder()
 
@@ -25,6 +29,7 @@ class DocumentDsl {
 
 }
 
+@XmlDsl
 class ElementDsl(name: String) {
     private val elementBuilder = XmlElement.Builder(name)
 

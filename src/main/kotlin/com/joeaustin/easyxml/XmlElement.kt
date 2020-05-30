@@ -6,19 +6,29 @@ class XmlElement(
     val name: String,
     val innerText: String,
     val attributes: List<XmlAttribute>,
-    val children: List<XmlComponent>
+    val subComponents: List<XmlComponent>
 ) : BaseXmlComponent() {
 
-    fun get(childName: String): List<XmlElement> {
-        return getChildrenElements(childName)
+    operator fun get(childName: String): List<XmlElement> {
+        return getChildren(childName)
     }
 
-    fun getChildrenElements(name: String, ignoreCase: Boolean = false): List<XmlElement> {
-        return children
+    fun getChildren(name: String, ignoreCase: Boolean = false): List<XmlElement> {
+        return subComponents
             .filter { child ->
                 child is XmlElement && child.name.equals(name, ignoreCase)
             }
             .mapNotNull { child -> child as? XmlElement }
+    }
+
+    fun getChildren(): List<XmlElement> {
+        return subComponents
+            .mapNotNull { component -> component as? XmlElement }
+    }
+
+    fun getFirstChild(name: String, ignoreCase: Boolean = false): XmlElement? {
+        return subComponents
+            .firstOrNull { c -> (c as? XmlElement)?.name.equals(name, ignoreCase) } as? XmlElement
     }
 
     fun getAttributeValue(name: String, ignoreCase: Boolean = false): String? {
@@ -28,9 +38,10 @@ class XmlElement(
     }
 
     override fun build(sb: StringBuilder, currentPadding: String, buildOptions: XmlBuildOptions) {
+        val normalizedName = normalizeKey(name)
         sb.append(currentPadding)
         sb.append("<")
-        sb.append(name)
+        sb.append(normalizedName)
 
         attributes.forEach { attr ->
             attr.build(sb, "", buildOptions)
@@ -39,7 +50,7 @@ class XmlElement(
         if (innerText.isNotEmpty()) {
             sb.append(">")
             sb.append(escapeText(innerText))
-        } else if (children.isNotEmpty()) {
+        } else if (subComponents.isNotEmpty()) {
             if (buildOptions.pretty) {
                 sb.appendln(">")
             } else {
@@ -48,20 +59,25 @@ class XmlElement(
 
             val subPadding = if (buildOptions.pretty) currentPadding + PADDING else ""
 
-            children.forEach { child ->
+            subComponents.forEach { child ->
                 child.build(sb, subPadding, buildOptions)
             }
         }
 
-        if (innerText.isEmpty() && children.isEmpty()) {
+        if (innerText.isEmpty() && subComponents.isEmpty()) {
             if (buildOptions.pretty) {
                 sb.appendln("/>")
             } else {
                 sb.append("/>")
             }
         } else {
+            //If we're doing pretty print and there aren't children, the closing tag should be
+            //on a new line indented to match the start tag
+            if (buildOptions.pretty && subComponents.isNotEmpty()) {
+                sb.append(currentPadding)
+            }
             sb.append("</")
-            sb.append(name)
+            sb.append(normalizedName)
             if (buildOptions.pretty) {
                 sb.appendln(">")
             } else {
