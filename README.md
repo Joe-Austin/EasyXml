@@ -10,9 +10,9 @@ A Kotlin-DSL which makes writing and parsing simple xml very easy for both Java 
 Dsl:
 ```kotlin
 xmlDocument {
-            root("People"){
+            root("Employees"){
                 comment("Employee")
-                child("Person") {
+                child("Employee") {
                     attributes(
                         "IsActive" to "true",
                         "IsManager" to "false"
@@ -26,7 +26,7 @@ xmlDocument {
                 }
 
                 comment("Manager")
-                child("Person") {
+                child("Employee") {
                     attributes(
                         "IsActive" to "true",
                         "IsManager" to "true"
@@ -36,7 +36,7 @@ xmlDocument {
                         text("Ann")
                     }
                     child("LastName"){
-                        text("Fackerson")
+                        text("Fakerson")
                     }
                 }
             }
@@ -46,18 +46,18 @@ xmlDocument {
 produces this xml:
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<People>
+<Employees>
     <!--Employee-->
-    <Person IsActive="true" IsManager="false">
+    <Employee IsActive="true" IsManager="false">
         <FirstName>John</FirstName>
         <LastName>Doe</LastName>
-    </Person>
+    </Employee>
     <!--Manager-->
-    <Person IsActive="true" IsManager="true">
+    <Employee IsActive="true" IsManager="true">
         <FirstName>Ann</FirstName>
-        <LastName>Fackerson</LastName>
-    </Person>
-</People>
+        <LastName>Fakerson</LastName>
+    </Employee>
+</Employees>
 ```
 
 ## Parsing
