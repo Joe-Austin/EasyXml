@@ -1,71 +1,81 @@
 package com.joeaustin.easyxml
 
 import org.xml.sax.Attributes
-import org.xml.sax.InputSource
-import org.xml.sax.Locator
 import org.xml.sax.SAXParseException
 import org.xml.sax.helpers.DefaultHandler
+import java.util.*
 
 
 internal class SaxParserHandler : DefaultHandler() {
 
-    override fun endElement(uri: String?, localName: String?, qName: String?) {
-        super.endElement(uri, localName, qName)
-    }
+    //region Fields and Properties
 
-    override fun processingInstruction(target: String?, data: String?) {
-        super.processingInstruction(target, data)
-    }
+    private val elementStack = Stack<XmlElement.Builder>()
+    private val sb = StringBuilder()
+    private var docBuilder = XmlDocument.Builder()
+    private var encounteredError = false
 
-    override fun startPrefixMapping(prefix: String?, uri: String?) {
-        super.startPrefixMapping(prefix, uri)
-    }
+    //endregion Fields and Properties
 
-    override fun ignorableWhitespace(ch: CharArray?, start: Int, length: Int) {
-        super.ignorableWhitespace(ch, start, length)
-    }
-
-    override fun notationDecl(name: String?, publicId: String?, systemId: String?) {
-        super.notationDecl(name, publicId, systemId)
-    }
-
-    override fun error(e: SAXParseException?) {
-        super.error(e)
-    }
-
-    override fun characters(ch: CharArray?, start: Int, length: Int) {
-        super.characters(ch, start, length)
-    }
-
-    override fun endDocument() {
-        super.endDocument()
-    }
-
-    override fun resolveEntity(publicId: String?, systemId: String?): InputSource {
-        return super.resolveEntity(publicId, systemId)
+    fun getDocument(): XmlDocument? {
+        return if (!encounteredError && elementStack.size == 1) {
+            val root = elementStack.pop().build()
+            XmlDocument(listOf(root))
+        } else {
+            null
+        }
     }
 
     override fun startElement(uri: String?, localName: String?, qName: String?, attributes: Attributes?) {
-        super.startElement(uri, localName, qName, attributes)
+        if (qName != null) {
+            sb.setLength(0)
+            val newBuilder = XmlElement.Builder(qName)
+
+            if (attributes != null) {
+                for (i in 0 until attributes.length) {
+                    val name = attributes.getQName(i)
+                    val value = attributes.getValue(i)
+                    newBuilder.addAttribute(XmlAttribute(name, value))
+                }
+            }
+
+            elementStack.push(newBuilder)
+        }
     }
 
-    override fun skippedEntity(name: String?) {
-        super.skippedEntity(name)
+
+
+    override fun endElement(uri: String?, localName: String?, qName: String?) {
+        if (sb.isNotEmpty()) {
+            val innerText = sb.toString().trimEnd()
+            elementStack.peek().addInnerText(innerText)
+
+            sb.setLength(0)
+        }
+
+        if (elementStack.size > 1) {
+            val currentElement = elementStack.pop().build()
+            elementStack.peek().addXmlElement(currentElement)
+        }
     }
 
-    override fun unparsedEntityDecl(name: String?, publicId: String?, systemId: String?, notationName: String?) {
-        super.unparsedEntityDecl(name, publicId, systemId, notationName)
+    override fun error(e: SAXParseException?) {
+        encounteredError = true
     }
 
-    override fun endPrefixMapping(prefix: String?) {
-        super.endPrefixMapping(prefix)
+    override fun characters(ch: CharArray?, start: Int, length: Int) {
+        sb.append(ch, start, length)
     }
+
 
     override fun startDocument() {
-        super.startDocument()
+        sb.setLength(0)
+        encounteredError = false
+        docBuilder = XmlDocument.Builder()
+        elementStack.clear()
     }
 
     override fun fatalError(e: SAXParseException?) {
-        super.fatalError(e)
+        encounteredError = true
     }
 }

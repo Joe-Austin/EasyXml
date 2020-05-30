@@ -1,5 +1,7 @@
 package com.joeaustin.easyxml
 
+import javax.xml.parsers.SAXParserFactory
+
 class XmlDocument(children: List<XmlComponent>) {
     val root: XmlElement? by lazy { children.firstOrNull { child -> child is XmlElement } as? XmlElement }
 
@@ -25,5 +27,43 @@ class XmlDocument(children: List<XmlComponent>) {
         root?.build(sb, "", buildOptions)
 
         return sb.toString()
+    }
+
+    class Builder {
+        private val children = ArrayList<XmlComponent>()
+
+        fun setRoot(root: XmlElement) {
+            children.removeIf { child -> child is XmlElement }
+            children.add(root)
+        }
+
+        fun addComment(comment: XmlComment) {
+            children.add(comment)
+        }
+
+        fun addComment(commentText: String) {
+            addComment(XmlComment(commentText))
+        }
+
+        fun build(): XmlDocument {
+            return XmlDocument(children)
+        }
+    }
+
+    companion object {
+        fun parse(text: String): XmlDocument? {
+            text.byteInputStream().use { inputStream ->
+                val parserFactory = SAXParserFactory.newInstance()
+                val parser = parserFactory.newSAXParser()
+                val handler = SaxParserHandler()
+
+                return try {
+                    parser.parse(inputStream, handler)
+                    handler.getDocument()
+                } catch (t: Throwable) {
+                    null
+                }
+            }
+        }
     }
 }

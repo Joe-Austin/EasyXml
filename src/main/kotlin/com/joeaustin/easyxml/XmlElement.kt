@@ -54,7 +54,11 @@ class XmlElement(
         }
 
         if (innerText.isEmpty() && children.isEmpty()) {
-            sb.append("/>")
+            if (buildOptions.pretty) {
+                sb.appendln("/>")
+            } else {
+                sb.append("/>")
+            }
         } else {
             sb.append("</")
             sb.append(name)
@@ -65,5 +69,35 @@ class XmlElement(
             }
         }
 
+    }
+
+    class Builder(val name: String) {
+        private val attributes = ArrayList<XmlAttribute>()
+        private val children = ArrayList<XmlComponent>()
+        private var innerText = ""
+
+        fun addInnerText(text: String) {
+            innerText = text
+        }
+
+        fun addAttribute(attr: XmlAttribute) {
+            attributes.add(attr)
+        }
+
+        fun addXmlElement(element: XmlElement) {
+            children.add(element)
+        }
+
+        fun addComment(comment: XmlComment) {
+            children.add(comment)
+        }
+
+        fun addComment(commentText: String) {
+            addComment(XmlComment(commentText))
+        }
+
+        fun build(): XmlElement {
+            return XmlElement(name, innerText, attributes, children)
+        }
     }
 }
