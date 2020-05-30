@@ -70,7 +70,7 @@ val doc = XmlDocument.parse(xmlText)
 ## Limitations
 This is currently fairly limited. It's intended for simple xml and doesn't currently support things like namespaces or CData. If there is a need and/or desire, additional features may be considered in the future.
 
-License
+License (MIT)
 =======
 Copyright 2020 Joe Austin
 
