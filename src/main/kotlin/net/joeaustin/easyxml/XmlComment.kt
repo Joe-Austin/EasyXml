@@ -1,4 +1,4 @@
-package com.joeaustin.easyxml
+package net.joeaustin.easyxml
 
 class XmlComment(val text: String) : XmlComponent {
     override fun build(sb: StringBuilder, currentPadding: String, buildOptions: XmlBuildOptions) {

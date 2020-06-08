@@ -1,6 +1,6 @@
-import com.joeaustin.easyxml.XmlBuildOptions
-import com.joeaustin.easyxml.XmlDocument
-import com.joeaustin.easyxml.dsl.xmlDocument
+import net.joeaustin.easyxml.XmlBuildOptions
+import net.joeaustin.easyxml.XmlDocument
+import net.joeaustin.easyxml.dsl.xmlDocument
 import org.junit.Assert.*
 import org.junit.Test
 import kotlin.math.min
@@ -41,7 +41,7 @@ class XmlBuilderAndParserTests {
     fun testSpecialChars () {
         val text = "<>&\"'"
         val doc = xmlDocument {
-            root("root"){
+            root("root") {
                 text(text)
             }
         }

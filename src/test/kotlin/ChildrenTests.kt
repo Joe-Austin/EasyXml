@@ -1,4 +1,4 @@
-import com.joeaustin.easyxml.dsl.xmlDocument
+import net.joeaustin.easyxml.dsl.xmlDocument
 import org.junit.Assert
 import org.junit.Test
 

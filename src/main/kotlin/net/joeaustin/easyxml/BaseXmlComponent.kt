@@ -1,4 +1,4 @@
-package com.joeaustin.easyxml
+package net.joeaustin.easyxml
 
 abstract class BaseXmlComponent : XmlComponent {
 

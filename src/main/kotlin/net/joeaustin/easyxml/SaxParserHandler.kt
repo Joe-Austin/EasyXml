@@ -1,4 +1,4 @@
-package com.joeaustin.easyxml
+package net.joeaustin.easyxml
 
 import org.xml.sax.Attributes
 import org.xml.sax.SAXParseException

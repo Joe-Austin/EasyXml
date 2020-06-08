@@ -1,13 +1,40 @@
-plugins {
-    id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
+import org.codehaus.groovy.runtime.GStringImpl
+
+buildscript {
+    def versionMajor = 1
+    def versionMinor = 0
+    def versionPatch = 0
+    ext {
+        versionName = "${versionMajor}.${versionMinor}.${versionPatch}" as GStringImpl
+    }
+
+    dependencies {
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:0.10.1'
+    }
+
+    repositories {
+        jcenter()
+    }
 }
 
-group 'com.joeaustin.easyxml'
-version '1.0-SNAPSHOT'
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
+    id 'nu.studer.credentials' version '1.0.7'
+}
+
+ext {
+    mavenUsername = credentials.SONATYPE_NEXUS_USERNAME
+    mavenPassword = credentials.SONATYPE_NEXUS_PASSWORD
+}
+
+group 'net.joeaustin.easyxml'
+version "$versionName"
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -15,9 +42,93 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+apply plugin: 'org.jetbrains.dokka'
+def dokkaDir = "$buildDir/dokka"
+dokka {
+    outputFormat = 'html'
+    outputDirectory = dokkaDir
+}
+def dokkaJarTaskProvider = tasks.register('dokkaJar', Jar) { task ->
+    task.archiveClassifier.set('javadoc')
+    task.from(dokkaDir)
+    task.dependsOn('dokka')
+}
+
+def javadocJarTaskProvider = tasks.register('javadocJar', org.jetbrains.dokka.gradle.DokkaTask) { task ->
+    task.outputFormat = 'javadoc'
+    task.outputDirectory = "$buildDir/javadoc"
+}
+tasks.named('assemble').configure {
+    it.dependsOn(javadocJarTaskProvider)
+}
+
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+def isReleaseBuild = !version.endsWith('-SNAPSHOT')
+
+apply plugin: 'maven-publish'
+apply plugin: 'nu.studer.credentials'
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            from components.java
+
+            artifact dokkaJarTaskProvider.get()
+            artifact kotlinSourcesJar
+
+            pom {
+                name = 'EasyXml'
+                description = 'Makes authoring and reading xml very simple.'
+                url = 'https://github.com/Joe-Austin/EasyXml'
+                licenses {
+                    license {
+                        name = 'The MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'Joe-Austin'
+                        name = 'Joe AUstin'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com:Joe-Austin/EasyXml.git'
+                    developerConnection = 'scm:git:ssh://git@github.com:Joe-Austin/EasyXml.git'
+                    url = 'https://github.com/Joe-Austin/EasyXml'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = isReleaseBuild
+                    ? 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+                    : 'https://oss.sonatype.org/content/repositories/snapshots/'
+            credentials {
+                username = mavenUsername
+                password = mavenPassword
+            }
+        }
+    }
+}
+
+if (isReleaseBuild) {
+    apply plugin: 'signing'
+    signing {
+        required { gradle.taskGraph.hasTask("publish") }
+        sign publishing.publications
+    }
+}
+
+tasks.register('publishSnapshot').configure { task ->
+    if (!isReleaseBuild) {
+        task.dependsOn(tasks.getByName('publish'))
+    }
 }

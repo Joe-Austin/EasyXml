@@ -1,4 +1,4 @@
-package com.joeaustin.easyxml
+package net.joeaustin.easyxml
 
 class XmlAttribute(val name: String, val value: String) : BaseXmlComponent() {
     override fun build(sb: StringBuilder, currentPadding: String, buildOptions: XmlBuildOptions) {

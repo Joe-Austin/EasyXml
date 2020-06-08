@@ -1,4 +1,4 @@
-package com.joeaustin.easyxml
+package net.joeaustin.easyxml
 
 data class XmlBuildOptions(
     val qualifierCharacter: Char = '\"',

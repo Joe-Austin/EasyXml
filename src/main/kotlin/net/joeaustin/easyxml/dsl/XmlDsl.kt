@@ -1,8 +1,8 @@
-package com.joeaustin.easyxml.dsl
+package net.joeaustin.easyxml.dsl
 
-import com.joeaustin.easyxml.XmlAttribute
-import com.joeaustin.easyxml.XmlDocument
-import com.joeaustin.easyxml.XmlElement
+import net.joeaustin.easyxml.XmlAttribute
+import net.joeaustin.easyxml.XmlDocument
+import net.joeaustin.easyxml.XmlElement
 
 @DslMarker
 private annotation class XmlDsl
