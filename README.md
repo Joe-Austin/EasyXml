@@ -3,7 +3,25 @@ A Kotlin-DSL which makes writing and parsing simple xml very easy for both Java 
 
 ## Installation
 
-- [ ] Publish to maven
+## Gradle
+Groovy
+```groovy
+implementation 'net.joeaustin.easyxml:EasyXml:1.0.0'
+```
+
+Kotlin DSL
+```kotlin
+implementation("net.joeaustin.easyxml:EasyXml:1.0.0")
+```
+
+## Maven
+```xml
+<dependency>
+  <groupId>net.joeaustin.easyxml</groupId>
+  <artifactId>EasyXml</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
 ## Authoring
 
