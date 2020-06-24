@@ -11,6 +11,10 @@ fun xmlDocument(init: DocumentDsl.() -> Unit): XmlDocument {
     return DocumentDsl().also(init).build()
 }
 
+fun xmlElement(name: String, init: ElementDsl.() -> Unit): XmlElement {
+    return ElementDsl(name).also(init).build()
+}
+
 @XmlDsl
 class DocumentDsl {
     private val builder = XmlDocument.Builder()
