@@ -57,6 +57,10 @@ class ElementDsl(name: String) {
         elementBuilder.addXmlElement(ElementDsl(name).also(init).build())
     }
 
+    fun child(element: XmlElement) {
+        elementBuilder.addXmlElement(element)
+    }
+
     fun build(): XmlElement {
         return elementBuilder.build()
     }

@@ -87,6 +87,12 @@ class XmlElement(
 
     }
 
+    override fun toString(): String {
+        val sb = java.lang.StringBuilder()
+        build(sb, "", XmlBuildOptions())
+        return sb.toString()
+    }
+
     class Builder(val name: String) {
         private val attributes = ArrayList<XmlAttribute>()
         private val children = ArrayList<XmlComponent>()
