@@ -27,6 +27,10 @@ class DocumentDsl {
         builder.setRoot(ElementDsl(name).also(init).build())
     }
 
+    fun root(rootElement: XmlElement) {
+        builder.setRoot(rootElement)
+    }
+
     fun build(): XmlDocument {
         return builder.build()
     }
